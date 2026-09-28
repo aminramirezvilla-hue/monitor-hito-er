@@ -11,6 +11,23 @@
   <link rel="apple-touch-icon" href="icons/icon-192.svg" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/print.css" media="print" />
+  <script>
+    (function () {
+      if (!("caches" in window)) return;
+      caches.keys().then(function (keys) {
+        if (keys.indexOf("catu-hito-er-v1") === -1) return;
+        var drop = Promise.resolve();
+        if ("serviceWorker" in navigator) {
+          drop = navigator.serviceWorker.getRegistrations().then(function (regs) {
+            return Promise.all(regs.map(function (r) { return r.unregister(); }));
+          });
+        }
+        drop.then(function () {
+          return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+        }).then(function () { location.reload(); });
+      });
+    })();
+  </script>
 </head>
 <body>
   <header class="app-header">
