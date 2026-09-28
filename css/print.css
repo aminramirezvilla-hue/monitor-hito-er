@@ -1,0 +1,7 @@
+@page{margin:14mm}
+body{background:#fff;color:#0B1018}
+.app-header,.sticky,.app-foot,.navrow,.actions,.opts,.rail,.pipeline,.ex-pipe,.badge{display:none !important}
+.screen{display:none !important}
+#screen-result.screen,#screen-result.screen.active{display:block !important}
+.card,.gap,.gbar,.cta,.hero-card,#res-fronts li{border-color:#ccc;background:#fff}
+a{color:#0B1018}
