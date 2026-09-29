@@ -15,6 +15,8 @@ button,input{font:inherit}
 .brand b{color:var(--gold);letter-spacing:.12em;font-size:.72rem}
 .brand span{font-family:var(--serif);font-size:1.05rem}
 .badge{border:1px solid var(--line);color:var(--mute);padding:.15rem .5rem;font-size:.72rem;border-radius:99px}
+body[data-screen="screen-home"] .sticky{display:none}
+.hint{min-height:1.1em}
 .sticky{padding:.55rem 1.1rem .75rem;background:#0E1522;border-bottom:1px solid var(--line);position:sticky;top:58px;z-index:15}
 .sticky-row{display:flex;justify-content:space-between;gap:1rem;font-size:.82rem;color:var(--mute)}
 .sticky-row strong{color:var(--gold2)}

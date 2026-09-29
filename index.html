@@ -15,7 +15,7 @@
     (function () {
       if (!("caches" in window)) return;
       caches.keys().then(function (keys) {
-        if (keys.indexOf("catu-hito-er-v1") === -1) return;
+        if (keys.indexOf("catu-hito-er-v1") === -1 && keys.indexOf("catu-hito-er-v2") === -1) return;
         var drop = Promise.resolve();
         if ("serviceWorker" in navigator) {
           drop = navigator.serviceWorker.getRegistrations().then(function (regs) {
@@ -32,41 +32,33 @@
 <body>
   <header class="app-header">
     <div class="brand">
-      <b>CATU · CATU-ER-B2</b>
-      <span>Monitor de Hito ER</span>
+      <b>CATU</b>
+      <span>Cierre municipal</span>
     </div>
     <span class="badge">Offline</span>
   </header>
   <div class="sticky" id="sticky">
     <div class="sticky-row">
-      <span>Reactivos express <strong id="sticky-count">0 / 15</strong></span>
-      <span id="sticky-hint">Hito a partir de 8 reactivos</span>
+      <span>Avance <strong id="sticky-count">0 / 15</strong></span>
+      <span id="sticky-hint">Responda con lo que sepa hoy</span>
     </div>
     <div class="track"><i id="sticky-bar"></i></div>
   </div>
   <main>
     <section id="screen-home" class="screen active">
-      <p class="kicker">CIERRE MUNICIPAL · GUERRERO</p>
+      <p class="kicker">ENTREGA-RECEPCIÓN</p>
       <h1>¿Qué tan preparado está el Ayuntamiento para el cierre de la administración municipal?</h1>
-      <p class="lede">Diagnóstico de mesa. Traduce el Protocolo de Blindaje Preventivo. No sustituye al B2 ni a la matriz C2. No es dictamen de la ASE ni del OIC.</p>
-      <article class="hero-card">
-        <p class="kicker">CÓMO SE CALCULA</p>
-        <p>Se entra por el primer portón que no está en “sí”: T-12 gobierno del cierre → T-6 conciliación → T-3 simulacro → T0 acta → T+30 aclaraciones. No se finge antigüedad.</p>
-      </article>
-      <article class="hero-card">
-        <p class="kicker">QUÉ ENTREGA</p>
-        <p>Hito de entrada, tres brechas y la siguiente conversación con CATU. El taller de 12 frentes es opcional.</p>
-      </article>
+      <p class="lede">Quince preguntas. Al final: en qué etapa está y qué conviene atender primero.</p>
       <div class="actions">
-        <button type="button" class="btn-gold" data-act="express">Diagnóstico express · 15 reactivos</button>
-        <button type="button" class="btn-ghost" data-act="taller">Taller · 12 frentes</button>
+        <button type="button" class="btn-gold" data-act="express">Empezar</button>
+        <button type="button" class="btn-ghost" data-act="taller">Prefiero ir por áreas</button>
       </div>
-      <p class="note">Firmar el acta no extingue responsabilidades (Ley 213, art. 30). CATU no firma el acta. 81 municipios es universo de aplicación, no padrón de adopción.</p>
+      <p class="note">No es una auditoría. Si no sabe una respuesta, elija «No sé».</p>
     </section>
     <section id="screen-express" class="screen">
-      <p class="kicker" id="ex-progress">Reactivo 1 de 15</p>
+      <p class="kicker" id="ex-progress">Pregunta 1 de 15</p>
       <h2 id="ex-gate">Gobierno del cierre</h2>
-      <p class="note" id="ex-law"></p>
+      <p class="note hint" id="ex-law"></p>
       <div class="ex-pipe" id="ex-pipe"></div>
       <article class="qcard">
         <p id="ex-text"></p>
@@ -83,44 +75,40 @@
       <p class="note"><button type="button" class="btn-ghost" data-act="home">Inicio</button></p>
     </section>
     <section id="screen-taller" class="screen">
-      <p class="kicker" id="fr-progress">Frente 1 de 12</p>
+      <p class="kicker" id="fr-progress">Área 1 de 12</p>
       <h2 id="fr-name">Gobierno y normativa</h2>
       <div class="rail" id="fr-rail"></div>
       <div id="fr-qs"></div>
       <div class="navrow">
         <button type="button" class="btn-ghost" id="btn-fr-prev">Anterior</button>
-        <button type="button" class="btn-gold" id="btn-fr-next">Siguiente frente</button>
+        <button type="button" class="btn-gold" id="btn-fr-next">Siguiente área</button>
       </div>
       <p class="note"><button type="button" class="btn-ghost" data-act="result">Saltar a resultado</button> · <button type="button" class="btn-ghost" data-act="home">Inicio</button></p>
     </section>
     <section id="screen-result" class="screen">
-      <p class="kicker" id="res-badge">Hito de entrada</p>
+      <p class="kicker" id="res-badge">Resultado</p>
       <h1 id="res-hito">—</h1>
       <p id="res-title"></p>
       <p class="lede" id="res-desc"></p>
       <p class="note" id="res-n"></p>
-      <h3>Tres brechas</h3>
+      <h3>Qué conviene atender primero</h3>
       <div id="res-gaps"></div>
-      <h3>Portones del reloj</h3>
+      <h3>Etapas</h3>
       <div id="res-gates"></div>
-      <h3>Doce frentes</h3>
+      <h3>Áreas</h3>
       <ul id="res-fronts"></ul>
       <article class="cta">
-        <p class="kicker">SIGUIENTE CONVERSACIÓN</p>
-        <p>Veinte minutos para confirmar el hito real con Tesorería y el OIC. Si hay mandato, CATU acompaña B2+C2. No firma el acta. No cotizamos en esta pantalla.</p>
+        <p class="kicker">SIGUIENTE PASO</p>
+        <p>Una llamada de 20 minutos con Tesorería y el OIC para confirmar esta foto y acordar el acompañamiento.</p>
         <div class="actions">
           <a class="btn-gold" id="res-cta-mail" href="mailto:centro.catu@gmail.com">Escribir a CATU</a>
-          <button type="button" class="btn-ghost" data-act="print">Imprimir / PDF</button>
-          <button type="button" class="btn-ghost" data-act="share">Compartir herramienta</button>
+          <button type="button" class="btn-ghost" data-act="print">Imprimir</button>
           <button type="button" class="btn-ghost" data-act="reset">Empezar de nuevo</button>
         </div>
       </article>
-      <p class="note">Producto institucional. Contrastar con fuentes oficiales (R086). Corte normativo 10-09-2026.</p>
     </section>
   </main>
-  <footer class="app-foot">
-    Centro de Auditoría Técnica y Urbana — CATU · Chilpancingo, Guerrero · centro.catu@gmail.com
-  </footer>
+  <footer class="app-foot">CATU · centro.catu@gmail.com</footer>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>
