@@ -2,16 +2,7 @@
   const D = window.CATU_HITO;
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
-
-  const state = {
-    view: "home",
-    mode: "express",
-    ei: 0,
-    fi: 0,
-    express: {},
-    fronts: {}
-  };
-
+  const state = { view: "home", mode: "express", ei: 0, fi: 0, express: {}, fronts: {} };
   function save() {
     try { localStorage.setItem("catu-hito", JSON.stringify({ express: state.express, fronts: state.fronts })); } catch (e) {}
   }
@@ -24,11 +15,9 @@
       state.fronts = o.fronts || {};
     } catch (e) {}
   }
-
   function answeredExpress() {
     return D.express.filter((q) => state.express[q.id]).length;
   }
-
   function gateStatus(gid) {
     const qs = D.express.filter((q) => q.gate === gid);
     const ans = qs.filter((q) => state.express[q.id]);
@@ -38,7 +27,6 @@
     if (ans.length < qs.length) return "open";
     return "fail";
   }
-
   function computeHito() {
     if (answeredExpress() < D.minExpress) return { key: null, pending: true };
     const order = ["T12", "T6", "T3", "T0", "T30"];
@@ -55,25 +43,17 @@
     }
     return { key: "POST", pending: false };
   }
-
   function threeGaps() {
     const out = [];
     for (const q of D.express) {
       const a = state.express[q.id];
       if (a === "no" || a === "ns") {
-        out.push({
-          id: q.id,
-          text: q.text,
-          gate: q.gate,
-          law: q.law,
-          kind: a === "ns" ? "No se sabe" : "No"
-        });
+        out.push({ id: q.id, text: q.text, gate: q.gate, law: q.law, kind: a === "ns" ? "No se sabe" : "No" });
       }
       if (out.length === 3) break;
     }
     return out;
   }
-
   function frontStatus(id) {
     const a = state.fronts[id + "-0"];
     const b = state.fronts[id + "-1"];
@@ -83,29 +63,25 @@
     if (yes === 1) return "mid";
     return "off";
   }
-
   function show(id) {
     $$(".screen").forEach((s) => s.classList.remove("active"));
     const el = $("#" + id);
     if (el) el.classList.add("active");
     state.view = id;
+    document.body.dataset.screen = id;
     window.scrollTo(0, 0);
   }
-
   function paintSticky() {
     const n = answeredExpress();
     $("#sticky-count").textContent = n + " / 15";
     const h = computeHito();
-    $("#sticky-hint").textContent = h.pending
-      ? "Hito a partir de 8 reactivos"
-      : (D.verdicts[h.key] || {}).hito || "—";
+    $("#sticky-hint").textContent = h.pending ? "Aún se está armando la foto" : (D.verdicts[h.key] || {}).hito || "—";
     $("#sticky-bar").style.width = Math.round((n / 15) * 100) + "%";
   }
-
   function renderExpress() {
     const q = D.express[state.ei];
     const gate = D.gates.find((g) => g.id === q.gate);
-    $("#ex-progress").textContent = "Reactivo " + (state.ei + 1) + " de 15 · " + gate.label;
+    $("#ex-progress").textContent = "Pregunta " + (state.ei + 1) + " de 15";
     $("#ex-gate").textContent = gate.title;
     $("#ex-law").textContent = q.law;
     $("#ex-text").textContent = q.text;
@@ -113,18 +89,17 @@
       b.classList.toggle("on", state.express[q.id] === b.dataset.v);
     });
     $("#btn-ex-prev").disabled = state.ei === 0;
-    $("#btn-ex-next").textContent = state.ei === D.express.length - 1 ? "Ver hito" : "Siguiente";
+    $("#btn-ex-next").textContent = state.ei === D.express.length - 1 ? "Ver resultado" : "Siguiente";
     const pipe = $("#ex-pipe");
     pipe.innerHTML = D.gates.map((g) => {
       const st = gateStatus(g.id);
-      return `<button type="button" class="pipe ${st} ${q.gate === g.id ? "active" : ""}" data-g="${g.id}"><strong>${g.label}</strong><span>${g.title}</span></button>`;
+      return `<button type="button" class="pipe ${st} ${q.gate === g.id ? "active" : ""}" data-g="${g.id}"><strong>${g.label}</strong></button>`;
     }).join("");
     paintSticky();
   }
-
   function renderFront() {
     const f = D.fronts[state.fi];
-    $("#fr-progress").textContent = "Frente " + (state.fi + 1) + " de 12";
+    $("#fr-progress").textContent = "Área " + (state.fi + 1) + " de 12";
     $("#fr-name").textContent = f.name;
     const box = $("#fr-qs");
     box.innerHTML = f.q.map((text, i) => {
@@ -142,26 +117,23 @@
       return `<button type="button" class="dot ${st} ${i === state.fi ? "active" : ""}" data-i="${i}" title="${x.name}">${i + 1}</button>`;
     }).join("");
     $("#btn-fr-prev").disabled = state.fi === 0;
-    $("#btn-fr-next").textContent = state.fi === D.fronts.length - 1 ? "Ver hito" : "Siguiente frente";
+    $("#btn-fr-next").textContent = state.fi === D.fronts.length - 1 ? "Ver resultado" : "Siguiente área";
   }
-
   function renderResult() {
     const h = computeHito();
     const v = h.pending ? null : D.verdicts[h.key];
-    $("#res-badge").textContent = h.pending ? "Dictamen pendiente" : "Hito de entrada";
-    $("#res-hito").textContent = h.pending ? "Aún no hay base suficiente" : v.hito;
-    $("#res-title").textContent = h.pending ? "Responda al menos 8 reactivos del express." : v.title;
-    $("#res-desc").textContent = h.pending ? "El hito se calcula con el primer portón que no está en “sí”." : v.desc;
-    $("#res-n").textContent = answeredExpress() + " reactivos express";
-
+    $("#res-badge").textContent = h.pending ? "Faltan respuestas" : "Etapa en la que entra";
+    $("#res-hito").textContent = h.pending ? "Todavía no alcanza para un resultado" : v.hito;
+    $("#res-title").textContent = h.pending ? "Complete al menos 8 preguntas del recorrido corto." : v.title;
+    $("#res-desc").textContent = h.pending ? "Con «No sé» también cuenta: marca lo que hay que verificar." : v.desc;
+    $("#res-n").textContent = answeredExpress() + " de 15 preguntas";
     const gaps = threeGaps();
     const gl = $("#res-gaps");
     if (!gaps.length) {
-      gl.innerHTML = "<p class='muted'>No hay brechas marcadas como No / No sé en el express.</p>";
+      gl.innerHTML = "<p class='muted'>No hay pendientes marcados como No / No sé.</p>";
     } else {
-      gl.innerHTML = gaps.map((g, i) => `<article class="gap"><span>0${i + 1} · ${g.kind} · ${g.gate}</span><p>${g.text}</p><small>${g.law}</small></article>`).join("");
+      gl.innerHTML = gaps.map((g, i) => `<article class="gap"><span>0${i + 1} · ${g.kind} · ${g.gate}</span><p>${g.text}</p></article>`).join("");
     }
-
     const bars = $("#res-gates");
     bars.innerHTML = D.gates.map((g) => {
       const st = gateStatus(g.id);
@@ -169,42 +141,40 @@
       const yes = qs.filter((q) => state.express[q.id] === "si").length;
       return `<div class="gbar ${st}"><div class="gbar-lab"><b>${g.label}</b> ${g.title}</div><div class="gbar-track"><i style="width:${Math.round((yes / qs.length) * 100)}%"></i></div><div class="gbar-n">${yes}/${qs.length}</div></div>`;
     }).join("");
-
     const fr = $("#res-fronts");
     fr.innerHTML = D.fronts.map((f) => {
       const st = frontStatus(f.id);
       const label = { empty: "Sin llenar", ok: "Operable", mid: "Incompleto", off: "Vacío" }[st];
       return `<li class="${st}"><b>${f.name}</b><span>${label}</span></li>`;
     }).join("");
-
     $("#res-cta-mail").href = "mailto:" + D.contactEmail +
       "?subject=" + encodeURIComponent("Diagnóstico de hito ER – CATU") +
       "&body=" + encodeURIComponent(mailBody(h, v, gaps));
   }
-
   function mailBody(h, v, gaps) {
     const lines = [
-      "Diagnóstico rápido de hito — Protocolo de Blindaje Preventivo (CATU-ER-B2).",
-      "No sustituye al protocolo ni a la matriz C2. No es dictamen de auditoría.",
+      "Diagnóstico rápido de cierre municipal — CATU.",
+      "No es dictamen de auditoría.",
       "",
-      h.pending ? "Hito: pendiente (menos de 8 reactivos)." : "Hito de entrada: " + v.hito,
+      h.pending ? "Resultado pendiente." : "Etapa: " + v.hito,
       h.pending ? "" : v.title,
       "",
-      "Tres brechas:",
-      ...(gaps.length ? gaps.map((g, i) => (i + 1) + ". [" + g.kind + " / " + g.gate + "] " + g.text) : ["(ninguna marcada)"]),
+      "Pendientes:",
+      ...(gaps.length ? gaps.map((g, i) => (i + 1) + ". [" + g.kind + " / " + g.gate + "] " + g.text) : ["(ninguno marcado)"]),
       "",
-      "Siguiente conversación: 20 minutos para confirmar el hito real y, si hay mandato, implantar B2+C2. CATU no firma el acta."
+      "Siguiente paso: llamada de 20 minutos con Tesorería y el OIC."
     ];
     return lines.join("\n");
   }
-
   function setExpress(val) {
     const q = D.express[state.ei];
     state.express[q.id] = val;
     save();
     renderExpress();
+    if (state.ei < D.express.length - 1) {
+      setTimeout(function () { state.ei += 1; renderExpress(); }, 160);
+    }
   }
-
   document.addEventListener("click", (e) => {
     const t = e.target.closest("[data-act]");
     if (t) {
@@ -259,11 +229,10 @@
       renderFront();
     }
   });
-
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js?v=2").catch(() => {});
+    navigator.serviceWorker.register("./sw.js?v=3").catch(() => {});
   }
-
+  document.body.dataset.screen = "screen-home";
   load();
   paintSticky();
 })();
