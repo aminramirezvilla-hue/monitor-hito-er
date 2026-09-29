@@ -1,4 +1,4 @@
-const CACHE = "catu-hito-er-v2";
+const CACHE = "catu-hito-er-v3";
 const ASSETS = [
   "./index.html",
   "./css/styles.css",
