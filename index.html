@@ -4,18 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0B1018" />
-  <meta name="description" content="Diagnóstico rápido del hito de entrada al Protocolo de Blindaje Preventivo para el cierre municipal. CATU." />
   <title>Monitor de Hito ER – CATU</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
-  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/print.css" media="print" />
   <script>
     (function () {
       if (!("caches" in window)) return;
       caches.keys().then(function (keys) {
-        if (keys.indexOf("catu-hito-er-v1") === -1 && keys.indexOf("catu-hito-er-v2") === -1) return;
+        if (["catu-hito-er-v1","catu-hito-er-v2","catu-hito-er-v3"].every(function (k) { return keys.indexOf(k) === -1; })) return;
         var drop = Promise.resolve();
         if ("serviceWorker" in navigator) {
           drop = navigator.serviceWorker.getRegistrations().then(function (regs) {
@@ -31,10 +29,7 @@
 </head>
 <body>
   <header class="app-header">
-    <div class="brand">
-      <b>CATU</b>
-      <span>Cierre municipal</span>
-    </div>
+    <div class="brand"><b>CATU</b><span>Cierre municipal</span></div>
     <span class="badge">Offline</span>
   </header>
   <div class="sticky" id="sticky">
@@ -48,12 +43,12 @@
     <section id="screen-home" class="screen active">
       <p class="kicker">ENTREGA-RECEPCIÓN</p>
       <h1>¿Qué tan preparado está el Ayuntamiento para el cierre de la administración municipal?</h1>
-      <p class="lede">Quince preguntas. Al final: en qué etapa está y qué conviene atender primero.</p>
+      <p class="lede">Si todavía no han armado nada de entrega-recepción, no use el recorrido del protocolo. Primero se ve qué ya existe en la administración.</p>
       <div class="actions">
-        <button type="button" class="btn-gold" data-act="express">Empezar</button>
-        <button type="button" class="btn-ghost" data-act="taller">Prefiero ir por áreas</button>
+        <button type="button" class="btn-gold" data-act="cero">Aún no hemos empezado el cierre</button>
+        <button type="button" class="btn-ghost" data-act="express">Ya hay algo en marcha</button>
       </div>
-      <p class="note">No es una auditoría. Si no sabe una respuesta, elija «No sé».</p>
+      <p class="note">Diez preguntas de lo cotidiano, o quince si ya hay expediente. «No sé» también sirve.</p>
     </section>
     <section id="screen-express" class="screen">
       <p class="kicker" id="ex-progress">Pregunta 1 de 15</p>
@@ -91,11 +86,11 @@
       <p id="res-title"></p>
       <p class="lede" id="res-desc"></p>
       <p class="note" id="res-n"></p>
-      <h3>Qué conviene atender primero</h3>
+      <h3 id="res-gaps-title">Qué conviene atender primero</h3>
       <div id="res-gaps"></div>
-      <h3>Etapas</h3>
+      <h3 id="res-gates-title">Etapas</h3>
       <div id="res-gates"></div>
-      <h3>Áreas</h3>
+      <h3 id="res-fronts-title">Áreas</h3>
       <ul id="res-fronts"></ul>
       <article class="cta">
         <p class="kicker">SIGUIENTE PASO</p>
